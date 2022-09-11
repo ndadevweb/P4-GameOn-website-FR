@@ -8,6 +8,10 @@ class Modal {
     this.modalContainer = document.querySelector(selector);
   }
 
+  getModalElement() {
+    return this.modalContainer;
+  }
+
   /**
    * Selecteur du bouton fermant la modal
    *
@@ -21,14 +25,39 @@ class Modal {
    * Afficher / ouvrir la modal
    */
   launch() {
-    this.modalContainer.classList.add("bground-show");
+    this.modalContainer.classList.remove('hide');
   }
 
   /**
    * Masquer / fermer la modal
    */
   close() {
-    this.modalContainer.classList.remove("bground-show");
+    this.modalContainer.classList.add('hide');
+  }
+
+  /**
+   * Affiche ou masque un contenu de l'element .content
+   *
+   * @param {String} selector
+   * @param {Boolean} display
+   * @param {String} className
+   */
+  displayContent(selector, display, className = '.hide') {
+    className = className[0] === '.' ? className.substring(1) : className;
+
+    const element = this.modalContainer.querySelector('.content ' + selector);
+
+    display === true ? element.classList.remove(className) : element.classList.add(className);
+  }
+
+  /**
+   * Change le contenu de l'element cible
+   *
+   * @param {String} selector
+   * @param {String} contentToUpdate
+   */
+  updateContent(selector, contentToUpdate) {
+    this.modalContainer.querySelector('.content ' + selector).innerHTML = contentToUpdate;
   }
 }
 
@@ -81,7 +110,7 @@ class Validator {
    * @returns {Boolean}
    */
   isValid(ruleName, value) {
-    return this.rules[ruleName]["callback"](value) === true;
+    return this.rules[ruleName]['callback'](value) === true;
   }
 
   /**
@@ -102,7 +131,7 @@ class Form {
    *
    * @property {Array}
    */
-  fieldsTypeContainingCharacters = ["text", "email", "number", "date"];
+  fieldsTypeContainingCharacters = ['text', 'email', 'number', 'date'];
 
   /**
    * Selecteur du formulaire ( ID ou class )
@@ -113,6 +142,15 @@ class Form {
   constructor(selector, validator) {
     this.form = document.querySelector(selector);
     this.validator = validator;
+  }
+
+  /**
+   * Retourne un form element
+   *
+   * @returns {Element}
+   */
+  getFormElement() {
+    return this.form;
   }
 
   /**
@@ -130,7 +168,7 @@ class Form {
       this.handleField(target, elements);
     });
 
-    // Des qu'un element affiche une erreur le formulaire n'est pas valide
+    // Pas d'erreur affichee le formulaire est valide
     return this.form.querySelector('[data-error-visible="true"') === null;
   }
 
@@ -145,14 +183,9 @@ class Form {
     const elements = Array.from(this.form.querySelectorAll(nameAttribute));
 
     elements.forEach((element) => {
-      const eventType =
-        this.fieldsTypeContainingCharacters.includes(element.type) === true
-          ? "input"
-          : "change";
+      const eventType = this.fieldsTypeContainingCharacters.includes(element.type) === true ? 'input' : 'change';
 
-      element.addEventListener(eventType, (event) =>
-        this.handleField(event.target, elements)
-      );
+      element.addEventListener(eventType, (event) => this.handleField(event.target, elements));
     });
   }
 
@@ -164,17 +197,15 @@ class Form {
    * @param {Validator} validator
    */
   handleField(target, elements) {
-    const dataAttributes = target.closest(".formData").dataset;
+    const dataAttributes = target.closest('.formData').dataset;
     let isValid = true;
 
     // Gestion des differents types de champs
-    if (target.type === "radio") {
+    if (target.type === 'radio') {
       isValid = this.validator.isValid(target.name, elements);
-    } else if (target.type === "checkbox") {
+    } else if (target.type === 'checkbox') {
       isValid = this.validator.isValid(target.name, target);
-    } else if (
-      this.fieldsTypeContainingCharacters.includes(target.type) === true
-    ) {
+    } else if (this.fieldsTypeContainingCharacters.includes(target.type) === true) {
       isValid = this.validator.isValid(target.name, target.value);
     } else {
       isValid = false;
@@ -184,11 +215,24 @@ class Form {
     if (isValid === false) {
       dataAttributes.error = this.validator.getErrorMessage(target.name);
       dataAttributes.errorVisible = true;
-    } else if (dataAttributes.hasOwnProperty("error") === true) {
+    } else if (dataAttributes.hasOwnProperty('error') === true) {
       // hasOwnProperty('error') pour eviter un effet visuel " vide " cause par le pseudo element ::after
-      dataAttributes.error = "";
+      dataAttributes.error = '';
       dataAttributes.errorVisible = false;
     }
+  }
+
+  /**
+   * Reinitialise toutes les valeurs du formulaire
+   * Reinitialise les informations gerant l'affichage des messages d'erreurs
+   */
+  reset() {
+    this.form.reset();
+
+    Array.from(this.form.querySelectorAll('.formData')).map((element) => {
+      element.dataset.error = '';
+      element.dataset.errorVisible = false;
+    });
   }
 }
 
@@ -196,38 +240,17 @@ class Form {
 
 const RegistrationValidator = new Validator();
 
-RegistrationValidator.add("firstname", getText("firstname"), (value) =>
-  /^[a-zA-Z\ \-']{2,}$/.test(value)
-);
-RegistrationValidator.add("lastname", getText("lastname"), (value) =>
-  /^[a-zA-Z\ \-']{2,}$/.test(value)
-);
-RegistrationValidator.add("email", getText("email"), (value) =>
-  /^[a-zA-Z0-9-.+_]+@[a-zA-Z0-9-]+[.]{1}[a-zA-Z]{2,4}$/.test(value)
-);
-RegistrationValidator.add(
-  "birthdate",
-  getText("birthdate"),
-  (value) => value.trim() !== ""
-);
-RegistrationValidator.add("quantity", getText("quantity"), (value) =>
-  /^[0-9]?[0-9]$/.test(value)
-);
-RegistrationValidator.add(
-  "location",
-  getText("location"),
-  (radioNodeList) =>
-    Array.from(radioNodeList).filter((radio) => radio.checked).length === 1
-);
-RegistrationValidator.add(
-  "conditionsAccepted",
-  getText("conditionsAccepted"),
-  (checkbox) => checkbox.checked
-);
+RegistrationValidator.add('firstname', getText('firstname'), (value) => /^[a-zA-Z\ \-']{2,}$/.test(value));
+RegistrationValidator.add('lastname', getText('lastname'), (value) => /^[a-zA-Z\ \-']{2,}$/.test(value));
+RegistrationValidator.add('email', getText('email'), (value) => /^[a-zA-Z0-9-.+_]+@[a-zA-Z0-9-]+[.]{1}[a-zA-Z]{2,4}$/.test(value));
+RegistrationValidator.add('birthdate', getText('birthdate'), (value) => value.trim() !== '');
+RegistrationValidator.add('quantity', getText('quantity'), (value) => /^[0-9]?[0-9]$/.test(value));
+RegistrationValidator.add('location', getText('location'), (radioNodeList) => Array.from(radioNodeList).filter((radio) => radio.checked).length === 1);
+RegistrationValidator.add('conditionsAccepted', getText('conditionsAccepted'), (checkbox) => checkbox.checked);
 
 // Initialisation du formulaire et ajout des regles de gestion sur chaque champs cibles
 
-const RegistrationForm = new Form(".form-signup", RegistrationValidator);
+const RegistrationForm = new Form('.form-signup', RegistrationValidator);
 
 Object.keys(RegistrationValidator.getRules()).forEach((fieldName) => {
   RegistrationForm.setFormFieldOnChange(fieldName);
@@ -236,38 +259,84 @@ Object.keys(RegistrationValidator.getRules()).forEach((fieldName) => {
 //
 
 function editNav() {
-  const x = document.getElementById("myTopnav");
+  const x = document.getElementById('myTopnav');
 
-  if (x.className === "topnav") {
-    x.className += " responsive";
+  if (x.className === 'topnav') {
+    x.className += ' responsive';
   } else {
-    x.className = "topnav";
+    x.className = 'topnav';
   }
 }
 
-// DOM Elements
-const modalbg = document.querySelector(".bground");
-const modalBody = document.querySelector(".modal-body");
-const modalBtn = document.querySelector(".modal-btn");
-const modalBtnClose = document.querySelector(".close");
-const formSignup = document.querySelector(".form-signup");
-
 // Modal
-const RegistrationModal = new Modal(".bground");
+const RegistrationModal = new Modal('.bground');
+
+// DOM Elements
+const modalBtn = document.querySelectorAll('.modal-btn');
+const modalBtnClose = RegistrationModal.getModalElement().querySelector('.close');
 
 // Event declenchant l'affichage de la modal
-modalBtn.addEventListener("click", () => RegistrationModal.launch());
+modalBtn.forEach((btn) => btn.addEventListener('click', () => RegistrationModal.launch()));
 
 // Event declenchant la fermeture de la modal
-modalBtnClose.addEventListener("click", () => RegistrationModal.close());
+modalBtnClose.addEventListener('click', handleCloseModal);
 
 // Event declenchant l'envoi du formulaire
-formSignup.addEventListener("submit", handleFormRegistration);
+RegistrationForm.getFormElement().addEventListener('submit', handleFormRegistration);
 
+// Configuration
+const modalProcessTimeout = 3000;
+
+/**
+ * Fermeture de la modal
+ *
+ * Les elements contenu dans la modal sont reinitialise
+ * aux valeurs par defaut des le premier affichage
+ */
+function handleCloseModal() {
+  // Formulaire re-affiche par defaut
+  RegistrationModal.displayContent('.form-signup', true, '.notVisible');
+  // Spinner + message de confirmation masques
+  RegistrationModal.displayContent('.status-work-in-progress', false);
+  RegistrationModal.displayContent('.status-processed', false);
+  // Reinitialisation du message d'information
+  RegistrationModal.updateContent('.status-processed', '');
+  RegistrationModal.close();
+}
+
+/**
+ * Traitement des donnees du formulaire
+ *
+ * @param {Event} event
+ */
 function handleFormRegistration(event) {
   event.preventDefault();
 
   if (RegistrationForm.isValid() === true) {
+    // bouton close masque
+    RegistrationModal.displayContent('.close', false);
+
+    // Le formulaire est masque visuellement mais toujours present dans le rendu
+    // La class .notVisible est utilisee pour conserver la hauteur de l'element
+    RegistrationModal.displayContent('.form-signup', false, '.notVisible');
+
+    // Affichage du spinner
+    RegistrationModal.displayContent('.status-work-in-progress', true);
+
+    // Traitement en cours ( simulation )
+    window.setTimeout(() => {
+      // Traitement termine le spinner est masque
+      RegistrationModal.displayContent('.status-work-in-progress', false);
+
+      // Message de confirmation affiche
+      RegistrationModal.updateContent('.status-processed', getText('formProcessed'));
+      RegistrationModal.displayContent('.status-processed', true);
+
+      // bouton close re-affiche
+      RegistrationModal.displayContent('.close', true);
+
+      RegistrationForm.reset();
+    }, modalProcessTimeout);
   }
 }
 
@@ -279,25 +348,28 @@ function handleFormRegistration(event) {
  */
 function getText(fieldName) {
   switch (fieldName) {
-    case "firstname":
-      return "Veuillez entrer 2 caractères ou plus (uniquement des lettres).";
+    case 'firstname':
+      return 'Veuillez entrer 2 caractères ou plus (uniquement des lettres).';
 
-    case "lastname":
-      return "Veuillez entrer 2 caractères ou plus (uniquement des lettres).";
+    case 'lastname':
+      return 'Veuillez entrer 2 caractères ou plus (uniquement des lettres).';
 
-    case "email":
-      return "Veuillez entrer une adresse email valide.";
+    case 'email':
+      return 'Veuillez entrer une adresse email valide.';
 
-    case "birthdate":
-      return "Vous devez entrer votre date de naissance.";
+    case 'birthdate':
+      return 'Vous devez entrer votre date de naissance.';
 
-    case "quantity":
-      return "Vous devez entrer une valeur numérique entre 0 et 99 inclus.";
+    case 'quantity':
+      return 'Vous devez entrer une valeur numérique entre 0 et 99 inclus.';
 
-    case "location":
-      return "Vous devez choisir une option.";
+    case 'location':
+      return 'Vous devez choisir une option.';
 
-    case "conditionsAccepted":
-      return "Vous devez vérifier que vous acceptez les termes et conditions.";
+    case 'conditionsAccepted':
+      return 'Vous devez vérifier que vous acceptez les termes et conditions.';
+
+    case 'formProcessed':
+      return 'Merci ! Votre réservation a été reçue.';
   }
 }
