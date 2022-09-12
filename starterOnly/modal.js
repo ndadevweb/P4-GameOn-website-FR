@@ -358,10 +358,10 @@ function handleFormRegistration(event) {
 function getText(fieldName) {
   switch (fieldName) {
     case 'firstname':
-      return 'Veuillez entrer 2 caractères ou plus (uniquement des lettres).';
+      return 'Le champs prénom doit au moins commencer par 2 lettres et peut ensuite contenir des lettres, espaces et apostrophes.';
 
     case 'lastname':
-      return 'Veuillez entrer 2 caractères ou plus (uniquement des lettres).';
+      return 'Le champs nom doit au moins commencer par 2 lettres et peut ensuite contenir des lettres, espaces et apostrophes.';
 
     case 'email':
       return 'Veuillez entrer une adresse email valide.';
