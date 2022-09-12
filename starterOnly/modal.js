@@ -238,12 +238,19 @@ class Form {
 
 // Initialisation des regles de gestions determinant la validite des champs du formulaire
 
+const checkBirthdate = (value) => {
+  const today = new Date();
+  const dateChoosen = new Date(value);
+
+  return value.trim() !== '' && dateChoosen < today;
+};
+
 const RegistrationValidator = new Validator();
 
-RegistrationValidator.add('firstname', getText('firstname'), (value) => /^[a-zA-Z\ \-']{2,}$/.test(value));
-RegistrationValidator.add('lastname', getText('lastname'), (value) => /^[a-zA-Z\ \-']{2,}$/.test(value));
+RegistrationValidator.add('firstname', getText('firstname'), (value) => /^([a-zA-Z]{2,})([a-zA-Z\ \- \']*)([a-zA-Z]*)$/.test(value));
+RegistrationValidator.add('lastname', getText('lastname'), (value) => /^([a-zA-Z]{2,})([a-zA-Z\ \- \']*)([a-zA-Z]*)$/.test(value));
 RegistrationValidator.add('email', getText('email'), (value) => /^[a-zA-Z0-9-.+_]+@[a-zA-Z0-9-]+[.]{1}[a-zA-Z]{2,4}$/.test(value));
-RegistrationValidator.add('birthdate', getText('birthdate'), (value) => value.trim() !== '');
+RegistrationValidator.add('birthdate', getText('birthdate'), checkBirthdate);
 RegistrationValidator.add('quantity', getText('quantity'), (value) => /^[0-9]?[0-9]$/.test(value));
 RegistrationValidator.add('location', getText('location'), (radioNodeList) => Array.from(radioNodeList).filter((radio) => radio.checked).length === 1);
 RegistrationValidator.add('conditionsAccepted', getText('conditionsAccepted'), (checkbox) => checkbox.checked);
@@ -252,11 +259,13 @@ RegistrationValidator.add('conditionsAccepted', getText('conditionsAccepted'), (
 
 const RegistrationForm = new Form('.form-signup', RegistrationValidator);
 
+// Les noms des cles definissant chaque regle de gestion est identique au nom du champs cible
+
 Object.keys(RegistrationValidator.getRules()).forEach((fieldName) => {
   RegistrationForm.setFormFieldOnChange(fieldName);
 });
 
-//
+// Gestion de l'affichage du menu sur une largeur d'ecran responsive
 
 function editNav() {
   const x = document.getElementById('myTopnav');
@@ -358,7 +367,7 @@ function getText(fieldName) {
       return 'Veuillez entrer une adresse email valide.';
 
     case 'birthdate':
-      return 'Vous devez entrer votre date de naissance.';
+      return 'Vous devez indiquer une date de naissance valide.';
 
     case 'quantity':
       return 'Vous devez entrer une valeur numérique entre 0 et 99 inclus.';
