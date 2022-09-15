@@ -14,15 +14,16 @@
         <img alt="logo" src="Logo.png" />
       </div>
 
+      <button type="button" class="icon">
+        <i class="fa fa-bars"></i>
+      </button>
+
       <div class="main-navbar">
         <a href="#" class="active"><span>Accueil</span></a>
         <a href="#"><span>Détails de l'évènement</span></a>
         <a href="#"><span>À propos</span></a>
         <a href="#"><span>Contact</span></a>
         <a href="#"><span>Évènements passés</span></a>
-        <a href="javascript:void(0);" class="icon" onclick="editNav()">
-          <i class="fa fa-bars"></i>
-        </a>
       </div>
     </div>
 
@@ -102,7 +103,7 @@
               </div>
 
               <div class="formData">
-                <input class="checkbox-input" type="checkbox" id="checkbox1" name="conditionsAccepted" checked />
+                <input class="checkbox-input" type="checkbox" id="checkbox1" name="conditionsAccepted" />
                 <label class="checkbox2-label" for="checkbox1">
                   <span class="checkbox-icon"></span>
                   J'ai lu et accepté les conditions d'utilisation.
@@ -129,7 +130,10 @@
               </div>
             </div>
 
-            <p class="status-processed hide"></p>
+            <div class="status-processed hide">
+              <p>Merci ! Votre réservation a été reçue.</p>
+              <button type="button" class="btn-close modal-btn">Fermer</button>
+            </div>
           </div>
         </div>
       </div>

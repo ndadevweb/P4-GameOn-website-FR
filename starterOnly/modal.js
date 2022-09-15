@@ -49,16 +49,6 @@ class Modal {
 
     display === true ? element.classList.remove(className) : element.classList.add(className);
   }
-
-  /**
-   * Change le contenu de l'element cible
-   *
-   * @param {String} selector
-   * @param {String} contentToUpdate
-   */
-  updateContent(selector, contentToUpdate) {
-    this.modalContainer.querySelector('.content ' + selector).innerHTML = contentToUpdate;
-  }
 }
 
 class Validator {
@@ -265,17 +255,22 @@ Object.keys(RegistrationValidator.getRules()).forEach((fieldName) => {
   RegistrationForm.setFormFieldOnChange(fieldName);
 });
 
-// Gestion de l'affichage du menu sur une largeur d'ecran responsive
+// Gestion de la desactivation du scroll de la page
+const enableBodyScroll = (bool) => {
+  bool === true ? document.body.classList.remove('overflow-hidden') : document.body.classList.add('overflow-hidden');
+};
 
-function editNav() {
-  const x = document.getElementById('myTopnav');
+// Gestion de l'affichage du menu en fixed sur une largeur d'ecran responsive
 
-  if (x.className === 'topnav') {
-    x.className += ' responsive';
-  } else {
-    x.className = 'topnav';
-  }
-}
+const topNav = document.getElementById('myTopnav');
+
+const topNavFixed = (bool) => {
+  bool === true ? topNav.classList.add('topnav-fixed-mobile') : topNav.classList.remove('topnav-fixed-mobile');
+};
+
+topNav.addEventListener('click', () => {
+  topNav.classList.contains('responsive') === false ? topNav.classList.add('responsive') : topNav.classList.remove('responsive');
+});
 
 // Modal
 const RegistrationModal = new Modal('.bground');
@@ -285,10 +280,18 @@ const modalBtn = document.querySelectorAll('.modal-btn');
 const modalBtnClose = RegistrationModal.getModalElement().querySelector('.close');
 
 // Event declenchant l'affichage de la modal
-modalBtn.forEach((btn) => btn.addEventListener('click', () => RegistrationModal.launch()));
+modalBtn.forEach((btn) =>
+  btn.addEventListener('click', () => {
+    RegistrationModal.launch();
+    topNavFixed(true);
+    enableBodyScroll(false);
+  })
+);
 
 // Event declenchant la fermeture de la modal
-modalBtnClose.addEventListener('click', handleCloseModal);
+['.close', '.btn-close'].forEach(function (btn) {
+  RegistrationModal.getModalElement().querySelector(btn).addEventListener('click', handleCloseModal);
+});
 
 // Event declenchant l'envoi du formulaire
 RegistrationForm.getFormElement().addEventListener('submit', handleFormRegistration);
@@ -299,18 +302,20 @@ const modalProcessTimeout = 3000;
 /**
  * Fermeture de la modal
  *
- * Les elements contenu dans la modal sont reinitialise
+ * Les elements contenu dans la modal sont reinitialises
  * aux valeurs par defaut des le premier affichage
  */
 function handleCloseModal() {
   // Formulaire re-affiche par defaut
-  RegistrationModal.displayContent('.form-signup', true, '.notVisible');
+  RegistrationModal.displayContent('.form-signup', true);
   // Spinner + message de confirmation masques
   RegistrationModal.displayContent('.status-work-in-progress', false);
   RegistrationModal.displayContent('.status-processed', false);
   // Reinitialisation du message d'information
-  RegistrationModal.updateContent('.status-processed', '');
   RegistrationModal.close();
+
+  topNavFixed(false);
+  enableBodyScroll(true);
 }
 
 /**
@@ -326,8 +331,7 @@ function handleFormRegistration(event) {
     RegistrationModal.displayContent('.close', false);
 
     // Le formulaire est masque visuellement mais toujours present dans le rendu
-    // La class .notVisible est utilisee pour conserver la hauteur de l'element
-    RegistrationModal.displayContent('.form-signup', false, '.notVisible');
+    RegistrationModal.displayContent('.form-signup', false);
 
     // Affichage du spinner
     RegistrationModal.displayContent('.status-work-in-progress', true);
@@ -338,7 +342,6 @@ function handleFormRegistration(event) {
       RegistrationModal.displayContent('.status-work-in-progress', false);
 
       // Message de confirmation affiche
-      RegistrationModal.updateContent('.status-processed', getText('formProcessed'));
       RegistrationModal.displayContent('.status-processed', true);
 
       // bouton close re-affiche
@@ -377,8 +380,5 @@ function getText(fieldName) {
 
     case 'conditionsAccepted':
       return 'Vous devez vérifier que vous acceptez les termes et conditions.';
-
-    case 'formProcessed':
-      return 'Merci ! Votre réservation a été reçue.';
   }
 }

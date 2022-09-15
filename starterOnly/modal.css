@@ -14,7 +14,7 @@
   display: none;
 }
 
-.notVisible {
+.not-visible {
   visibility: hidden;
   opacity: 0;
 }
@@ -24,6 +24,10 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.overflow-hidden {
+  overflow-y: hidden;
 }
 
 /* Landing Page */
@@ -47,9 +51,12 @@ img {
   padding-right: 1rem;
 }
 
+/* Navigation */
+
 .topnav {
-  overflow: hidden;
-  margin: 3.5%;
+  margin: 0;
+  padding: 3.5%;
+  background: #ffffff;
 }
 
 .header-logo {
@@ -59,9 +66,17 @@ img {
 
 .main-navbar {
   float: right;
+  background: #ffffff;
 }
 
-.topnav a {
+.topnav button {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.topnav a,
+.topnav button {
   float: left;
   display: block;
   color: #000000;
@@ -73,7 +88,8 @@ img {
   font-family: Roboto, sans-serif;
 }
 
-.topnav a:hover {
+.topnav a:hover,
+.topnav button:hover {
   background-color: #ff0000;
   color: #ffffff;
   border-radius: 15px;
@@ -88,6 +104,8 @@ img {
 .topnav .icon {
   display: none;
 }
+
+/* Main content  + footer */
 
 main {
   font-size: 130%;
@@ -149,6 +167,7 @@ main {
   left: 0;
   top: 0;
   height: 100%;
+  min-height: 500px;
   width: 100%;
   overflow: auto;
   background-color: rgba(26, 39, 156, 0.4);
@@ -156,6 +175,7 @@ main {
 
 .content {
   margin: 5% auto;
+  min-height: 90%;
   width: 100%;
   max-width: 500px;
   animation-name: modalopen;
@@ -303,6 +323,7 @@ input {
 .close:after {
   transform: rotate(-45deg);
 }
+.btn-close,
 .btn-submit,
 .btn-signup {
   background: #fe142f;
@@ -506,14 +527,33 @@ footer {
 
 .status-processed {
   position: absolute;
-  top: 100px;
+  top: 45px;
   right: 30px;
   left: 30px;
+  bottom: 50px;
   line-height: 1.75;
   text-align: center;
 }
 
-@media screen and (max-width: 1120px) {
+.status-processed p {
+  padding: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+}
+
+.status-processed button {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* ecran moyen / tablette / mobile */
+
+@media screen and (max-width: 1130px) {
   .header-logo img {
     max-width: 180px;
   }
@@ -521,27 +561,23 @@ footer {
     font-size: 4.5rem;
     white-space: normal;
   }
-}
 
-@media screen and (max-width: 1024px) {
-  .topnav a {
-    display: none;
-  }
-  .topnav a.icon {
+  .topnav .icon {
+    color: #ff0000;
+    display: block;
     float: right;
+  }
+  .topnav .main-navbar {
+    display: none;
+    clear: both;
+  }
+
+  .topnav.responsive .main-navbar {
     display: block;
   }
-  .topnav.responsive {
-    position: relative;
-  }
-  .topnav.responsive .icon {
-    position: absolute;
-    right: 0;
-    top: 0;
-  }
-  .topnav.responsive a {
+
+  .topnav.responsive .main-navbar a {
     float: none;
-    display: block;
     text-align: left;
   }
 }
@@ -590,13 +626,21 @@ footer {
 }
 
 @media screen and (max-width: 540px) {
-  .topnav a {
-    display: none;
+  .topnav {
+    padding: 20px;
   }
-  .topnav a.icon {
-    float: right;
-    display: block;
-    /* margin-top: -15px; */
+  .topnav-fixed-mobile {
+    position: fixed;
+    top: -10px;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    min-height: 95px;
+  }
+
+  .topnav-fixed-mobile .header-logo,
+  .topnav-fixed-mobile button.icon {
+    margin-top: 15px;
   }
 
   .hero-content {
@@ -605,6 +649,13 @@ footer {
 
   .hero-headline {
     font-size: 2.5rem;
+  }
+
+  .content {
+    width: auto;
+    max-width: 100%;
+    margin-top: 97px;
+    margin-bottom: 0;
   }
 
   .choose-city {
