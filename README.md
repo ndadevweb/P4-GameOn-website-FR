@@ -2,7 +2,7 @@
 
 ## Description
 
-**GameOn**, est une PMA spécialisée dans les conférences et les concours de jeux.
+**GameOn**, est une PME spécialisée dans les conférences et les concours de jeux.
 
 L'objectif est de forké le projet puis de continuer celui-ci en corrigeant les erreurs remontées par les équipes QA et rendre
 fonctionnel la modal d'inscription aux concours.
