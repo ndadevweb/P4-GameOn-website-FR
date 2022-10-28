@@ -99,10 +99,14 @@ const checkBirthdate = (value) => {
   return value.trim() !== '' && dateChoosen < today;
 };
 
+const checkName = (value) => {
+	return /^([a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ]{2,})([a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ\ \- \']*)([a-zA-Z]*)$/.test(value);
+};
+
 const RegistrationValidator = new Validator();
 
-RegistrationValidator.add('firstname', getText('firstname'), (value) => /^([a-zA-Z]{2,})([a-zA-Z\ \- \']*)([a-zA-Z]*)$/.test(value));
-RegistrationValidator.add('lastname', getText('lastname'), (value) => /^([a-zA-Z]{2,})([a-zA-Z\ \- \']*)([a-zA-Z]*)$/.test(value));
+RegistrationValidator.add('firstname', getText('firstname'), checkName);
+RegistrationValidator.add('lastname', getText('lastname'), checkName);
 RegistrationValidator.add('email', getText('email'), (value) => /^[a-zA-Z0-9-.+_]+@[a-zA-Z0-9-]+[.]{1}[a-zA-Z]{2,4}$/.test(value));
 RegistrationValidator.add('birthdate', getText('birthdate'), checkBirthdate);
 RegistrationValidator.add('quantity', getText('quantity'), (value) => /^[0-9]?[0-9]$/.test(value));
